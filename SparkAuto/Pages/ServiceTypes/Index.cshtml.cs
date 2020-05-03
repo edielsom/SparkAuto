@@ -22,7 +22,7 @@ namespace SparkAuto.Pages.ServiceTypes
 
         public async Task<ActionResult> OnGet()
         {
-            await this._db.ServiceTypes.ToListAsync();
+            ServiceType = await this._db.ServiceTypes.ToListAsync();
             return Page();
         }
     }

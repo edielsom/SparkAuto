@@ -28,6 +28,7 @@ namespace SparkAuto
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            
             // Este lambda determina se o consentimento do usuário para itens não essenciais
             // cookies são necessários para uma determinada solicitação.
             services.Configure<CookiePolicyOptions>(option =>
@@ -40,9 +41,11 @@ namespace SparkAuto
 
 
             //Adiciona a Conexão de String
-            services.AddDbContext<ApplicationDbContext>(options =>
-                options.UseSqlServer(
-                    Configuration.GetConnectionString("DefaultConnection")));
+            //services.AddDbContext<ApplicationDbContext>(options =>
+            //    options.UseSqlServer(
+            //Configuration.GetConnectionString("DefaultConnection")));
+            services.AddDbContext<ApplicationDbContext>();
+
             services.AddDefaultIdentity<IdentityUser>()
                 .AddEntityFrameworkStores<ApplicationDbContext>();
 

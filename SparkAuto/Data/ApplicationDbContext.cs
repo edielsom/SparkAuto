@@ -14,6 +14,13 @@ namespace SparkAuto.Data
         {
         }
 
+        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+        {
+            string conn = "Server =.\\SQL2019; Database = SparkAuto; User = sa; Password = estadao; ";
+            optionsBuilder.UseSqlServer(conn);
+            //Configuration.GetConnectionString("DefaultConnection")));
+        }
+
         public DbSet<ServiceType> ServiceTypes { get; set; }
     }
 }
