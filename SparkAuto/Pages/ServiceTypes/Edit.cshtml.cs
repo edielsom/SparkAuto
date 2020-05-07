@@ -43,6 +43,9 @@ namespace SparkAuto.Pages.ServiceTypes
             }
 
             var serviceFromDb = await _db.ServiceTypes.FirstOrDefaultAsync(s => s.Id == ServiceType.Id);
+            serviceFromDb.Name = ServiceType.Name;
+            serviceFromDb.Price = ServiceType.Price;
+
 
             _db.ServiceTypes.Update(serviceFromDb);
 
