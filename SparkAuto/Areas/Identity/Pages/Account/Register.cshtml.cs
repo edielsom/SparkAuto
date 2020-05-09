@@ -13,6 +13,9 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Extensions.Logging;
+using SparkAuto.Areas.Utily;
+using SparkAuto.Data;
+using SparkAuto.Models;
 
 namespace SparkAuto.Areas.Identity.Pages.Account
 {
@@ -23,17 +26,23 @@ namespace SparkAuto.Areas.Identity.Pages.Account
         private readonly UserManager<IdentityUser> _userManager;
         private readonly ILogger<RegisterModel> _logger;
         private readonly IEmailSender _emailSender;
+        private readonly RoleManager<IdentityRole> _roleManager;
+        private readonly ApplicationDbContext _db;
 
         public RegisterModel(
             UserManager<IdentityUser> userManager,
             SignInManager<IdentityUser> signInManager,
             ILogger<RegisterModel> logger,
-            IEmailSender emailSender)
+            IEmailSender emailSender,
+            RoleManager<IdentityRole> roleManager,
+            ApplicationDbContext db)
         {
             _userManager = userManager;
             _signInManager = signInManager;
             _logger = logger;
             _emailSender = emailSender;
+            _roleManager = roleManager;
+            _db = db;
         }
 
         [BindProperty]
@@ -51,15 +60,29 @@ namespace SparkAuto.Areas.Identity.Pages.Account
             public string Email { get; set; }
 
             [Required]
-            [StringLength(100, ErrorMessage = "The {0} must be at least {2} and at max {1} characters long.", MinimumLength = 6)]
+            [StringLength(100, ErrorMessage = "O {0} deve ter pelo menos {2} e no máximo {1} characters.", MinimumLength = 6)]
             [DataType(DataType.Password)]
-            [Display(Name = "Password")]
+            [Display(Name = "Senha")]
             public string Password { get; set; }
 
             [DataType(DataType.Password)]
-            [Display(Name = "Confirm password")]
-            [Compare("Password", ErrorMessage = "The password and confirmation password do not match.")]
+            [Display(Name = "Confirmar a Senha")]
+            [Compare("Password", ErrorMessage = "A Senha e a confirmação da Senha não estão iguais.")]
             public string ConfirmPassword { get; set; }
+
+            [Required]
+            [Display(Name = "Nome")]
+            public string Name { get; set; }
+            [Display(Name = "Endereço")]
+            public string Address { get; set; }
+            [Display(Name = "Cidade")]
+            public string City { get; set; }
+            [Display(Name = "CEP")]
+            public string PostalCode { get; set; }
+
+            [Required]
+            [Display(Name = "Telefone")]
+            public string PhoneNumber { get; set; }
         }
 
         public async Task OnGetAsync(string returnUrl = null)
@@ -74,11 +97,39 @@ namespace SparkAuto.Areas.Identity.Pages.Account
             ExternalLogins = (await _signInManager.GetExternalAuthenticationSchemesAsync()).ToList();
             if (ModelState.IsValid)
             {
-                var user = new IdentityUser { UserName = Input.Email, Email = Input.Email };
+                //Instância a classe que herda de IdentityUser
+                var user = new ApplicationUser
+                {
+                    UserName = Input.Email,
+                    Email = Input.Email,
+
+                    //Coloca as novas propriedades criadas para o registro do usuário
+                    Name = Input.Name,
+                    Address = Input.Address,
+                    City = Input.City,
+                    PostalCode = Input.PostalCode,
+                    PhoneNumber = Input.PhoneNumber
+                };
+
+                //Cria a conta do Usuário no banco de dados e cria as regras de acesso.
                 var result = await _userManager.CreateAsync(user, Input.Password);
                 if (result.Succeeded)
                 {
-                    _logger.LogInformation("User created a new account with password.");
+
+                    //Cria o grupo de permissão [Administrador e Cliente]
+                    if (!await _roleManager.RoleExistsAsync(SD.AdminEndUser)) 
+                    {
+                        await _roleManager.CreateAsync(new IdentityRole(SD.AdminEndUser));
+                    }
+                    if (! await _roleManager.RoleExistsAsync(SD.CustomerEndUser))
+                    {
+                        await _roleManager.CreateAsync(new IdentityRole(SD.CustomerEndUser));
+                    }
+
+                    //Cria o tipo de Usuario
+                    await _userManager.AddToRoleAsync(user, SD.CustomerEndUser);
+
+                    _logger.LogInformation("O usuário criou uma nova conta com senha..");
 
                     var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
                     code = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(code));
@@ -88,8 +139,8 @@ namespace SparkAuto.Areas.Identity.Pages.Account
                         values: new { area = "Identity", userId = user.Id, code = code },
                         protocol: Request.Scheme);
 
-                    await _emailSender.SendEmailAsync(Input.Email, "Confirm your email",
-                        $"Please confirm your account by <a href='{HtmlEncoder.Default.Encode(callbackUrl)}'>clicking here</a>.");
+                    await _emailSender.SendEmailAsync(Input.Email, "Confirme seu email",
+                        $"Por favor, confirme sua conta <a href='{HtmlEncoder.Default.Encode(callbackUrl)}'>Clique aqui</a>.");
 
                     if (_userManager.Options.SignIn.RequireConfirmedAccount)
                     {

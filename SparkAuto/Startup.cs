@@ -46,7 +46,9 @@ namespace SparkAuto
             //Configuration.GetConnectionString("DefaultConnection")));
             services.AddDbContext<ApplicationDbContext>();
 
-            services.AddDefaultIdentity<IdentityUser>()
+            services.AddIdentity<IdentityUser,IdentityRole>()
+                .AddDefaultTokenProviders()
+                .AddDefaultUI()
                 .AddEntityFrameworkStores<ApplicationDbContext>();
 
             //Para compilar página Razor
