@@ -10,5 +10,6 @@ namespace SparkAuto.Areas.Utily
         //Usuário Padrão do administrador e do cliente.
         public const string AdminEndUser = "Admin";
         public const string CustomerEndUser = "Customer";
+        public const int PaginationUsersPage = 2;
     }
 }
