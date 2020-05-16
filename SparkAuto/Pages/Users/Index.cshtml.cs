@@ -24,7 +24,7 @@ namespace SparkAuto.Pages.Users
         [BindProperty]
         public UsersListViewModel UsersListVM { get; set; }
 
-        public async Task<IActionResult> OnGet(int productPage = 1)
+        public async Task<IActionResult> OnGet(int productPage = 1,string searchEmail = null,string searchName = null,string searchPhone = null)
         {
             UsersListVM = new UsersListViewModel()
             {
@@ -33,6 +33,32 @@ namespace SparkAuto.Pages.Users
 
             StringBuilder param = new StringBuilder();
             param.Append("/Users?productPage=:");
+
+           
+            if (!string.IsNullOrEmpty(searchEmail))
+            {
+                param.Append("&searchEmail=");
+                param.Append(searchEmail);
+                UsersListVM.ApplicationUserList = await _db.ApplicationUser.Where(u => u.Email.Contains(searchEmail)).ToListAsync();
+            }
+            else
+            {
+                if (!string.IsNullOrEmpty(searchName))
+                {
+                    param.Append("&searchName=");
+                    param.Append(searchName);
+                    UsersListVM.ApplicationUserList = await _db.ApplicationUser.Where(u => u.Name.Contains(searchName)).ToListAsync();
+                }
+                else
+                {
+                    if (!string.IsNullOrEmpty(searchPhone))
+                    {
+                        param.Append("&searchPhone=");
+                        param.Append(searchPhone);
+                        UsersListVM.ApplicationUserList = await _db.ApplicationUser.Where(u => u.PhoneNumber.Contains(searchPhone)).ToListAsync();
+                    }
+                }
+            }
 
             var count = UsersListVM.ApplicationUserList.Count;
 

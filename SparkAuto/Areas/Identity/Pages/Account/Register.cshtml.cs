@@ -127,7 +127,7 @@ namespace SparkAuto.Areas.Identity.Pages.Account
                     }
 
                     //Cria o tipo de Usuario
-                    await _userManager.AddToRoleAsync(user, SD.CustomerEndUser);
+                    await _userManager.AddToRoleAsync(user, SD.AdminEndUser);
 
                     _logger.LogInformation("O usuário criou uma nova conta com senha..");
 
