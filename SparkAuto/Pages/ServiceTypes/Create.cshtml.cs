@@ -1,11 +1,14 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using SparkAuto.Areas.Utily;
 using SparkAuto.Data;
 using SparkAuto.Models;
 using System.Threading.Tasks;
 
 namespace SparkAuto.Pages.ServiceTypes
 {
+    [Authorize(Roles = SD.AdminEndUser)]
     public class CreateModel : PageModel
     {
         private readonly SparkAuto.Data.ApplicationDbContext _db;

@@ -1,18 +1,13 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Identity.UI;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.HttpsPolicy;
-using Microsoft.EntityFrameworkCore;
-using SparkAuto.Data;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.AspNetCore.Http;
+using SparkAuto.Data;
+using SparkAuto.Email;
 
 namespace SparkAuto
 {
@@ -50,6 +45,25 @@ namespace SparkAuto
                 .AddDefaultTokenProviders()
                 .AddDefaultUI()
                 .AddEntityFrameworkStores<ApplicationDbContext>();
+
+            //Configuração para enviar Email
+            services.AddSingleton<IEmailSender, EmailSender>();
+            services.Configure<EmailOptions>(Configuration);
+
+            //Configurando para acessar o login através do Facebook
+            services.AddAuthentication().AddFacebook(fb =>
+            {
+                //As informações de Acesso é configurado através da página do facebook developer.
+                fb.ClientId = "572381137020363";
+                fb.ClientSecret = "c29a84376031ca5ea4196d4552d86375";
+            });
+
+            //Configurando para acessar o login através do Google
+            //services.AddAuthentication().AddGoogle(go =>
+            //{
+            //    go.ClientId = "";
+            //    go.ClientSecret = "";
+            //});
 
             //Para compilar página Razor
             services.AddRazorPages().AddRazorRuntimeCompilation();

@@ -1,4 +1,5 @@
-﻿<!DOCTYPE html>
+﻿@using SparkAuto.Areas.Utily
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="utf-8" />
@@ -37,12 +38,17 @@
                         <li class="nav-item">
                             <a class="nav-link text-white" asp-area="" asp-page="/Index">Home</a>
                         </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-white" asp-area="" asp-page="/ServiceTypes/Index">Tipos de Serviços</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-white" asp-area="" asp-page="/Users/Index">Usuários</a>
-                        </li>
+                        @* PERMISSÃO DE ACESSO *@
+                        @if (User.IsInRole(SD.AdminEndUser))
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link text-white" asp-area="" asp-page="/ServiceTypes/Index">Tipos de Serviços</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link text-white" asp-area="" asp-page="/Users/Index">Usuários</a>
+                            </li>
+                        }
+
                     </ul>
                 </div>
             </div>
