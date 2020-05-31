@@ -81,6 +81,11 @@
                                 @Html.DisplayNameFor(m => m.CarAndCustVM.Cars.FirstOrDefault().Color)
                             </th>
                             <th></th>
+                            @if (User.IsInRole(SD.AdminEndUser))
+                            {
+                                <th></th>
+                            }
+                            <th></th>
                         </tr>
                     </thead>
                     <tbody>
@@ -99,6 +104,19 @@
                                 <td>
                                     @Html.DisplayFor(m => item.Color)
                                 </td>
+                                <td>
+                                    <a class="btn btn-secondary" asp-page="../Services/History" asp-route-CarId="@item.Id">
+                                        <i class="fas fa-wrench">&nbsp; Service History</i>
+                                    </a>
+                                </td>
+                                @if (User.IsInRole(SD.AdminEndUser))
+                                {
+                                    <td>
+                                        <a class="btn btn-success" asp-page="../Services/Create" asp-route-CarId="@item.Id">
+                                            <i class="fas fa-plus">&nbsp; New Service</i>
+                                        </a>
+                                    </td>
+                                }
                                 <td style="width:150px;">
                                     <div class="btn-group" role="group">
                                         <a asp-page="Edit" asp-route-Id="@item.Id" class="btn btn-primary text-white m-1">
