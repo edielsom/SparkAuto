@@ -6,20 +6,20 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
-using SparkAuto.Areas.Utily;
 using SparkAuto.Data;
 using SparkAuto.Models;
+using SparkAuto.Utility;
 
 namespace SparkAuto.Pages.ServiceTypes
 {
     [Authorize(Roles = SD.AdminEndUser)]
     public class DetailsModel : PageModel
     {
-        private readonly SparkAuto.Data.ApplicationDbContext _context;
+        private readonly ApplicationDbContext _db;
 
-        public DetailsModel(SparkAuto.Data.ApplicationDbContext context)
+        public DetailsModel(ApplicationDbContext db)
         {
-            _context = context;
+            _db = db;
         }
 
         public ServiceType ServiceType { get; set; }
@@ -31,7 +31,7 @@ namespace SparkAuto.Pages.ServiceTypes
                 return NotFound();
             }
 
-            ServiceType = await _context.ServiceTypes.FirstOrDefaultAsync(m => m.Id == id);
+            ServiceType = await _db.ServiceType.FirstOrDefaultAsync(m => m.Id == id);
 
             if (ServiceType == null)
             {

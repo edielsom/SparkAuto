@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using SparkAuto.Data;
@@ -10,24 +11,26 @@ using SparkAuto.Models;
 
 namespace SparkAuto.Pages.Cars
 {
+    [Authorize]
     public class CreateModel : PageModel
     {
-        private readonly SparkAuto.Data.ApplicationDbContext _db;
+        private readonly ApplicationDbContext _db;
 
         [BindProperty]
         public Car Car { get; set; }
 
         [TempData]
         public string StatusMessage { get; set; }
+
         public CreateModel(ApplicationDbContext db)
         {
-            this._db = db;
+            _db = db;
         }
 
-        public IActionResult OnGet(string userId = null)
+        public IActionResult OnGet(string userId=null)
         {
             Car = new Car();
-            if (string.IsNullOrEmpty(userId))
+            if (userId == null)
             {
                 var claimsIdentity = (ClaimsIdentity)User.Identity;
                 var claim = claimsIdentity.FindFirst(ClaimTypes.NameIdentifier);
@@ -39,15 +42,16 @@ namespace SparkAuto.Pages.Cars
 
         public async Task<IActionResult> OnPostAsync()
         {
-            //Se o Mode for inválido, retorna para página de criação.
             if (!ModelState.IsValid)
+            {
                 return Page();
+            }
 
-            this._db.Cars.Add(Car);
-
-            await this._db.SaveChangesAsync();
-            StatusMessage = "Car has been added sucessfully";
-            return RedirectToPage("Index",new { userId = Car.UserId });
+            _db.Car.Add(Car);
+            await _db.SaveChangesAsync();
+            StatusMessage = "Car has been added sucessfully.";
+            return RedirectToPage("Index", new { userId = Car.UserId });
         }
+
     }
 }

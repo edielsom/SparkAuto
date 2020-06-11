@@ -4,14 +4,14 @@
     ViewData["Title"] = "Register";
 }
 
-<h2 class="text-primary">@ViewData["Title"]</h2>
-<h4 class="text-primary">Associe seu @Model.LoginProvider conta.</h4>
+<h2 class="text-info">@ViewData["Title"]</h2>
+<h4 class="text-info">Associate your @Model.LoginProvider account.</h4>
 <hr />
 
-<p class="text-primary">
-    Você se autenticou com sucesso com <strong> @Model.LoginProvider </strong>.
-    Digite um endereço de e-mail para este site abaixo e clique no botão Registrar para finalizar
-    fazendo login.
+<p class="text-info">
+    You've successfully authenticated with <strong>@Model.LoginProvider</strong>.
+    Please enter an email address for this site below and click the Register button to finish
+    logging in.
 </p>
 
 <div class="row">
@@ -35,10 +35,11 @@
                         <label asp-for="Input.Email"></label>
                     </div>
                     <div class="col-5">
-                        <input asp-for="Input.Email"  class="form-control" />
+                        <input asp-for="Input.Email" class="form-control" />
                     </div>
                     <span asp-validation-for="Input.Email" class="text-danger"></span>
                 </div>
+
             </div>
             <div class="form-group">
                 <div class="row">
@@ -50,6 +51,7 @@
                     </div>
                     <span asp-validation-for="Input.PhoneNumber" class="text-danger"></span>
                 </div>
+
             </div>
             <div class="form-group">
                 <div class="row">
@@ -61,6 +63,7 @@
                     </div>
                     <span asp-validation-for="Input.Address" class="text-danger"></span>
                 </div>
+
             </div>
             <div class="form-group">
                 <div class="row">
@@ -72,6 +75,7 @@
                     </div>
                     <span asp-validation-for="Input.City" class="text-danger"></span>
                 </div>
+
             </div>
             <div class="form-group">
                 <div class="row">
@@ -83,17 +87,18 @@
                     </div>
                     <span asp-validation-for="Input.PostalCode" class="text-danger"></span>
                 </div>
+
             </div>
             <div class="form-group">
                 <div class="row">
                     <div class="col-2">
-
                     </div>
                     <div class="col-5">
-                        <button type="submit" class="btn btn-primary form-control">Registrar</button>
+                        <button type="submit" class="btn btn-success form-control">Register</button>
                     </div>
                 </div>
             </div>
+           
         </form>
     </div>
 </div>

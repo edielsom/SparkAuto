@@ -1,11 +1,14 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
-using SparkAuto.Areas.Utily;
 using SparkAuto.Data;
 using SparkAuto.Models;
-using System.Threading.Tasks;
+using SparkAuto.Utility;
 
 namespace SparkAuto.Pages.Users
 {
@@ -16,7 +19,7 @@ namespace SparkAuto.Pages.Users
 
         public EditModel(ApplicationDbContext db)
         {
-            this._db = db;
+            _db = db;
         }
 
         [BindProperty]
@@ -24,32 +27,47 @@ namespace SparkAuto.Pages.Users
 
         public async Task<IActionResult> OnGetAsync(string id)
         {
-            if (string.IsNullOrEmpty(id)) return NotFound();
+            if (id.Trim().Length == 0)
+            {
+                return NotFound();
+            }
 
-            ApplicationUser = await _db.ApplicationUser.SingleOrDefaultAsync(u => u.Id == id);
+            ApplicationUser = await _db.ApplicationUser.FirstOrDefaultAsync(m => m.Id == id);
 
-            if (ApplicationUser is null) return NotFound();
-
+            if (ApplicationUser == null)
+            {
+                return NotFound();
+            }
             return Page();
         }
 
         public async Task<IActionResult> OnPostAsync()
         {
-            if (!ModelState.IsValid) return Page();
+            if (!ModelState.IsValid)
+            {
+                return Page();
+            }
+            else
+            {
+                var userInDb = await _db.ApplicationUser.SingleOrDefaultAsync(u => u.Id == ApplicationUser.Id);
+                if (userInDb == null)
+                {
+                    return NotFound();
+                }
+                else
+                {
+                    userInDb.Name = ApplicationUser.Name;
+                    userInDb.PhoneNumber = ApplicationUser.PhoneNumber;
+                    userInDb.Address = ApplicationUser.Address;
+                    userInDb.City = ApplicationUser.City;
+                    userInDb.PostalCode = ApplicationUser.PostalCode;
 
-
-            var userInDb = await _db.ApplicationUser.SingleOrDefaultAsync(u => u.Id == ApplicationUser.Id);
-
-            if (userInDb is null) return NotFound();
-
-            userInDb.Name = ApplicationUser.Name;
-            userInDb.PhoneNumber= ApplicationUser.PhoneNumber;
-            userInDb.Address = ApplicationUser.Address;
-            userInDb.City = ApplicationUser.City;
-            userInDb.PostalCode = ApplicationUser.PostalCode;
-
-            await _db.SaveChangesAsync();
-            return RedirectToPage("Index");
+                    await _db.SaveChangesAsync();
+                    return RedirectToPage("Index");
+                }
+            }
         }
+
+
     }
 }

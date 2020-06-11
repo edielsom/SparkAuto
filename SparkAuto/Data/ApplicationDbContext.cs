@@ -16,15 +16,17 @@ namespace SparkAuto.Data
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            string conn = "Server =.\\SQL2019; Database = SparkAuto; User = sa; Password = estadao; ";
+            string dataBase = "SparkAuto";
+            // string dataBase = "SparkAutoMaster";
+            string conn = $"Server =.\\SQL2019; Database = {dataBase}; User = sa; Password = estadao; ";
             optionsBuilder.UseSqlServer(conn);
             //Configuration.GetConnectionString("DefaultConnection")));
         }
-
-        public DbSet<ServiceType> ServiceTypes { get; set; }
+        public DbSet<ServiceType> ServiceType { get; set; }
         public DbSet<ApplicationUser> ApplicationUser { get; set; }
-        public DbSet<Car> Cars { get; set; }
-        public DbSet<ServiceShoppingCar> ServiceShoppingCars { get; set; }
-        public DbSet<ServiceHeader> ServiceHeaders { get; set; }
+        public DbSet<Car> Car { get; set; }
+        public DbSet<ServiceShoppingCart> ServiceShoppingCart { get; set; }
+        public DbSet<ServiceHeader> ServiceHeader { get; set; }
+        public DbSet<ServiceDetails> ServiceDetails { get; set; }
     }
 }

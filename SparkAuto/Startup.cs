@@ -1,13 +1,21 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.UI;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Identity.UI.Services;
+using Microsoft.AspNetCore.HttpsPolicy;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using SparkAuto.Data;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
-using SparkAuto.Data;
+using Microsoft.AspNetCore.Identity.UI.Services;
 using SparkAuto.Email;
+using Microsoft.Extensions.Hosting;
 
 namespace SparkAuto
 {
@@ -23,54 +31,54 @@ namespace SparkAuto
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            
             // Este lambda determina se o consentimento do usuário para itens não essenciais
             // cookies são necessários para uma determinada solicitação.
-            services.Configure<CookiePolicyOptions>(option =>
+            services.Configure<CookiePolicyOptions>(options =>
             {
-                option.CheckConsentNeeded = context => true;
-
-                // requer o uso de Microsoft.AspNetCore.Http;
-                option.MinimumSameSitePolicy = SameSiteMode.None;
+                // This lambda determines whether user consent for non-essential cookies is needed for a given request.
+                options.CheckConsentNeeded = context => true;
+                options.MinimumSameSitePolicy = SameSiteMode.None;
             });
-
+            services.AddScoped<IDbInitializer, DbInitializer>();
 
             //Adiciona a Conexão de String
             //services.AddDbContext<ApplicationDbContext>(options =>
             //    options.UseSqlServer(
             //Configuration.GetConnectionString("DefaultConnection")));
+
+
             services.AddDbContext<ApplicationDbContext>();
 
-            services.AddIdentity<IdentityUser,IdentityRole>()
+            services.AddIdentity<IdentityUser, IdentityRole>()
                 .AddDefaultTokenProviders()
-                .AddDefaultUI()
                 .AddEntityFrameworkStores<ApplicationDbContext>();
 
             //Configuração para enviar Email
             services.AddSingleton<IEmailSender, EmailSender>();
-            services.Configure<EmailOptions>(Configuration);
 
             //Configurando para acessar o login através do Facebook
             services.AddAuthentication().AddFacebook(fb =>
             {
                 //As informações de Acesso é configurado através da página do facebook developer.
-                fb.ClientId = "572381137020363";
-                fb.ClientSecret = "c29a84376031ca5ea4196d4552d86375";
+                fb.AppId = "1460046297460691";
+                fb.AppSecret = "d62e7f2852fc5d7b12f8518721222f5b";
             });
 
             //Configurando para acessar o login através do Google
-            //services.AddAuthentication().AddGoogle(go =>
-            //{
-            //    go.ClientId = "";
-            //    go.ClientSecret = "";
-            //});
+            services.AddAuthentication().AddGoogle(go =>
+            {
+                go.ClientId = "688106088890-pov7l0qi48ep9nhb4idiihhig97mc97a.apps.googleusercontent.com";
+                go.ClientSecret = "AZGG3CIboE3UAxf1AgdjX9pF";
+            });
 
-            //Para compilar página Razor
-            services.AddRazorPages().AddRazorRuntimeCompilation();
+            services.Configure<EmailOptions>(Configuration);
+            services.AddRazorPages();
+            services.AddControllersWithViews().AddRazorRuntimeCompilation();
+
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, IDbInitializer dbInitializer)
         {
             if (env.IsDevelopment())
             {
@@ -83,21 +91,23 @@ namespace SparkAuto
                 // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
                 app.UseHsts();
             }
-             
+            dbInitializer.Initialize();
             app.UseHttpsRedirection();
             app.UseStaticFiles();
             app.UseCookiePolicy();
-            app.UseRouting();
 
+            app.UseAuthentication();
+
+            app.UseRouting();
             app.UseAuthentication();
             app.UseAuthorization();
 
+
             app.UseEndpoints(endpoints =>
             {
+                endpoints.MapControllers();
                 endpoints.MapRazorPages();
             });
-
-
         }
     }
 }

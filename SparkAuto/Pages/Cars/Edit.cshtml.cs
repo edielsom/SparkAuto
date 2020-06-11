@@ -34,7 +34,7 @@ namespace SparkAuto.Pages.Cars
                 return NotFound();
             }
 
-            Car = await _db.Cars
+            Car = await _db.Car
                 .Include(c => c.ApplicationUser).FirstOrDefaultAsync(m => m.Id == id);
 
             if (Car == null)

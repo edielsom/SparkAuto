@@ -1,5 +1,4 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -15,6 +14,7 @@ namespace SparkAuto.Models
 
         [Required]
         public string VIN { get; set; }
+
         [Required]
         public string Make { get; set; }
         [Required]

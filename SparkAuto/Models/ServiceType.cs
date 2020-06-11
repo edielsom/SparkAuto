@@ -1,6 +1,8 @@
 ﻿using System;
-using System.ComponentModel;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace SparkAuto.Models
 {
@@ -8,12 +10,10 @@ namespace SparkAuto.Models
     {
         public int Id { get; set; }
 
-        [Required(ErrorMessage ="Atenção, o nome do serviço é obrigatório", AllowEmptyStrings = false)]
-        [DisplayName("Nome")]
+        [Required]
         public string Name { get; set; }
-        [Required(ErrorMessage = "Atenção, o preço do serviço é obrigatório", AllowEmptyStrings = false)]
-        [DisplayName("Preço")]
-        [DisplayFormat(DataFormatString = "{0:C}", ApplyFormatInEditMode = true)]
+
+        [Required]
         [DataType(DataType.Currency)]
         public double Price { get; set; }
     }

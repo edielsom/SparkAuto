@@ -1,12 +1,15 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using System;
+using System.Collections.Generic;
+using System.Data;
+using System.Linq;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
-using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.EntityFrameworkCore;
-using SparkAuto.Areas.Utily;
 using SparkAuto.Data;
 using SparkAuto.Models;
-using System.Threading.Tasks;
+using SparkAuto.Utility;
 
 namespace SparkAuto.Pages.Users
 {
@@ -14,24 +17,28 @@ namespace SparkAuto.Pages.Users
     public class DeleteModel : PageModel
     {
         private readonly ApplicationDbContext _db;
+
         public DeleteModel(ApplicationDbContext db)
         {
-            this._db = db;
+            _db = db;
         }
 
         [BindProperty]
-        public ApplicationUser  ApplicationUser { get; set; }
+        public ApplicationUser ApplicationUser { get; set; }
 
         public async Task<IActionResult> OnGetAsync(string id)
         {
-            if (string.IsNullOrEmpty(id))
+            if (id.Trim().Length == 0)
+            {
                 return NotFound();
+            }
 
-            ApplicationUser = await _db.ApplicationUser.FirstOrDefaultAsync(u => u.Id == id);
+            ApplicationUser = await _db.ApplicationUser.FirstOrDefaultAsync(m => m.Id == id);
 
-            if (ApplicationUser is null)
+            if (ApplicationUser == null)
+            {
                 return NotFound();
-
+            }
             return Page();
         }
 
@@ -44,5 +51,7 @@ namespace SparkAuto.Pages.Users
 
             return RedirectToPage("Index");
         }
+
+
     }
 }

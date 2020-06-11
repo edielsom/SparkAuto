@@ -34,7 +34,7 @@ namespace SparkAuto.Pages.Cars
                 return NotFound();
             }
 
-            Car = await _db.Cars
+            Car = await _db.Car
                 .Include(c => c.ApplicationUser).FirstOrDefaultAsync(m => m.Id == id);
 
             if (Car == null)
@@ -52,7 +52,7 @@ namespace SparkAuto.Pages.Cars
             }
             var userId = Car.UserId;
 
-            _db.Cars.Remove(Car);
+            _db.Car.Remove(Car);
             await _db.SaveChangesAsync();
             StatusMessage = "Car deleted successfully.";
             return RedirectToPage("./Index", new { userId });

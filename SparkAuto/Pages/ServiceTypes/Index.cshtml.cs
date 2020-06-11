@@ -1,29 +1,34 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
-using SparkAuto.Areas.Utily;
 using SparkAuto.Data;
 using SparkAuto.Models;
-using System.Collections.Generic;
-using System.Threading.Tasks;
+using SparkAuto.Utility;
 
 namespace SparkAuto.Pages.ServiceTypes
 {
     [Authorize(Roles = SD.AdminEndUser)]
     public class IndexModel : PageModel
     {
+
         private readonly ApplicationDbContext _db;
-        public IList<ServiceType> ServiceType;
+
         public IndexModel(ApplicationDbContext db)
         {
-            this._db = db;
-            this.ServiceType = new List<ServiceType>();
+            _db = db;
         }
 
-        public async Task<ActionResult> OnGet()
+
+        public IList<ServiceType> ServiceType { get; set; }
+
+        public async Task<IActionResult> OnGet()
         {
-            ServiceType = await this._db.ServiceTypes.ToListAsync();
+            ServiceType = await _db.ServiceType.ToListAsync();
             return Page();
         }
     }

@@ -1,12 +1,15 @@
-﻿using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.RazorPages;
-using Microsoft.EntityFrameworkCore;
-using SparkAuto.Areas.Utily;
-using SparkAuto.Data;
-using SparkAuto.Models;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.RazorPages;
+using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.EntityFrameworkCore;
+using SparkAuto.Data;
+using SparkAuto.Models;
+using SparkAuto.Utility;
 
 namespace SparkAuto.Pages.ServiceTypes
 {
@@ -30,7 +33,7 @@ namespace SparkAuto.Pages.ServiceTypes
                 return NotFound();
             }
 
-            ServiceType = await _db.ServiceTypes.FirstOrDefaultAsync(m => m.Id == id);
+            ServiceType = await _db.ServiceType.FirstOrDefaultAsync(m => m.Id == id);
 
             if (ServiceType == null)
             {
@@ -38,6 +41,7 @@ namespace SparkAuto.Pages.ServiceTypes
             }
             return Page();
         }
+
         public async Task<IActionResult> OnPostAsync()
         {
             if (!ModelState.IsValid)
@@ -45,21 +49,14 @@ namespace SparkAuto.Pages.ServiceTypes
                 return Page();
             }
 
-            var serviceFromDb = await _db.ServiceTypes.FirstOrDefaultAsync(s => s.Id == ServiceType.Id);
+            var serviceFromDb = await _db.ServiceType.FirstOrDefaultAsync(s => s.Id == ServiceType.Id);
             serviceFromDb.Name = ServiceType.Name;
             serviceFromDb.Price = ServiceType.Price;
-
-
-            _db.ServiceTypes.Update(serviceFromDb);
-
             await _db.SaveChangesAsync();
 
             return RedirectToPage("./Index");
         }
 
-        private bool ServiceTypeExists(int id)
-        {
-            return _db.ServiceTypes.Any(e => e.Id == id);
-        }
+       
     }
 }

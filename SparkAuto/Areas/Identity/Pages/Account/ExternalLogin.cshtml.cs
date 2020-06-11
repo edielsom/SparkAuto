@@ -3,19 +3,15 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Security.Claims;
-using System.Text;
-using System.Text.Encodings.Web;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
-using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Extensions.Logging;
-using SparkAuto.Areas.Utily;
 using SparkAuto.Data;
 using SparkAuto.Models;
+using SparkAuto.Utility;
 
 namespace SparkAuto.Areas.Identity.Pages.Account
 {
@@ -24,23 +20,21 @@ namespace SparkAuto.Areas.Identity.Pages.Account
     {
         private readonly SignInManager<IdentityUser> _signInManager;
         private readonly UserManager<IdentityUser> _userManager;
-        private readonly IEmailSender _emailSender;
         private readonly ILogger<ExternalLoginModel> _logger;
         private readonly RoleManager<IdentityRole> _roleManager;
+
 
         public ExternalLoginModel(
             SignInManager<IdentityUser> signInManager,
             UserManager<IdentityUser> userManager,
             ILogger<ExternalLoginModel> logger,
-            IEmailSender emailSender,
-             RoleManager<IdentityRole> roleManager)
+            RoleManager<IdentityRole> roleManager
+            )
         {
             _signInManager = signInManager;
             _userManager = userManager;
             _logger = logger;
-            _emailSender = emailSender;
             _roleManager = roleManager;
-
         }
 
         [BindProperty]
@@ -53,8 +47,6 @@ namespace SparkAuto.Areas.Identity.Pages.Account
         [TempData]
         public string ErrorMessage { get; set; }
 
-
-
         public class InputModel
         {
             [Required]
@@ -62,18 +54,16 @@ namespace SparkAuto.Areas.Identity.Pages.Account
             public string Email { get; set; }
 
             [Required]
-            [Display(Name = "Nome")]
             public string Name { get; set; }
-            [Display(Name = "Endereço")]
             public string Address { get; set; }
-            [Display(Name = "Cidade")]
             public string City { get; set; }
-            [Display(Name = "CEP")]
             public string PostalCode { get; set; }
 
             [Required]
-            [Display(Name = "Telefone")]
             public string PhoneNumber { get; set; }
+
+
+
         }
 
         public IActionResult OnGetAsync()
@@ -100,7 +90,7 @@ namespace SparkAuto.Areas.Identity.Pages.Account
             var info = await _signInManager.GetExternalLoginInfoAsync();
             if (info == null)
             {
-                ErrorMessage = "Erro ao carregar informações de login externo.";
+                ErrorMessage = "Error loading external login information.";
                 return RedirectToPage("./Login", new { ReturnUrl = returnUrl });
             }
 
@@ -108,7 +98,7 @@ namespace SparkAuto.Areas.Identity.Pages.Account
             var result = await _signInManager.ExternalLoginSignInAsync(info.LoginProvider, info.ProviderKey, isPersistent: false, bypassTwoFactor : true);
             if (result.Succeeded)
             {
-                _logger.LogInformation("{Name} logado com {LoginProvider} provider.", info.Principal.Identity.Name, info.LoginProvider);
+                _logger.LogInformation("{Name} logged in with {LoginProvider} provider.", info.Principal.Identity.Name, info.LoginProvider);
                 return LocalRedirect(returnUrl);
             }
             if (result.IsLockedOut)
@@ -139,26 +129,22 @@ namespace SparkAuto.Areas.Identity.Pages.Account
             var info = await _signInManager.GetExternalLoginInfoAsync();
             if (info == null)
             {
-                ErrorMessage = "Erro ao carregar informações de login externo durante a confirmação.";
+                ErrorMessage = "Error loading external login information during confirmation.";
                 return RedirectToPage("./Login", new { ReturnUrl = returnUrl });
             }
 
             if (ModelState.IsValid)
             {
-                //Instância a classe que herda de IdentityUser
                 var user = new ApplicationUser
                 {
                     UserName = Input.Email,
                     Email = Input.Email,
-
-                    //Coloca as novas propriedades criadas para o registro do usuário
                     Name = Input.Name,
                     Address = Input.Address,
                     City = Input.City,
                     PostalCode = Input.PostalCode,
                     PhoneNumber = Input.PhoneNumber
                 };
-
                 var result = await _userManager.CreateAsync(user);
                 if (result.Succeeded)
                 {
@@ -166,28 +152,8 @@ namespace SparkAuto.Areas.Identity.Pages.Account
                     result = await _userManager.AddLoginAsync(user, info);
                     if (result.Succeeded)
                     {
-                        _logger.LogInformation("O usuário criou uma conta usando {Name} provider.", info.LoginProvider);
-
-                        var userId = await _userManager.GetUserIdAsync(user);
-                        var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
-                        code = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(code));
-                        var callbackUrl = Url.Page(
-                            "/Account/ConfirmEmail",
-                            pageHandler: null,
-                            values: new { area = "Identity", userId = userId, code = code },
-                            protocol: Request.Scheme);
-
-                        await _emailSender.SendEmailAsync(Input.Email, "Confirmar seu email",
-                            $"Por favor, confirme sua conta <a href='{HtmlEncoder.Default.Encode(callbackUrl)}'>clicando aqui</a>.");
-
-                        // If account confirmation is required, we need to show the link if we don't have a real email sender
-                        if (_userManager.Options.SignIn.RequireConfirmedAccount)
-                        {
-                            return RedirectToPage("./RegisterConfirmation", new { Email = Input.Email });
-                        }
-
-                        await _signInManager.SignInAsync(user, isPersistent: false, info.LoginProvider);
-
+                        await _signInManager.SignInAsync(user, isPersistent: false);
+                        _logger.LogInformation("User created an account using {Name} provider.", info.LoginProvider);
                         return LocalRedirect(returnUrl);
                     }
                 }

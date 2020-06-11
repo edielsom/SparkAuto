@@ -1,12 +1,14 @@
 ﻿@page
 @model SparkAuto.Pages.Users.DeleteModel
+
 @{
     ViewData["Title"] = "Delete";
     Layout = "~/Pages/Shared/_Layout.cshtml";
 }
 
+
 <br />
-<h2 class="text-info">Excluir Cliente</h2>
+<h2 class="text-info">Delete Customer</h2>
 <br />
 <form method="post">
     <input asp-for="ApplicationUser.Id" hidden />
@@ -79,6 +81,10 @@
         </div>
     </div>
 </form>
+
+
+
+
 
 
 

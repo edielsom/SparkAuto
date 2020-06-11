@@ -1,11 +1,11 @@
 ﻿@page
-@using SparkAuto.Areas.Utily
 @model RegisterModel
+@using SparkAuto.Utility
 @{
     ViewData["Title"] = "Register";
 }
 
-<h2>Criar uma nova conta</h2>
+<h2 class="text-info pt-2 pb-3">Create a new account</h2>
 
 <div class="row backgroundWhite border">
     <div class="col-md-8">
@@ -33,6 +33,7 @@
                     </div>
                     <span asp-validation-for="Input.Email" class="text-danger"></span>
                 </div>
+
             </div>
             <div class="form-group">
                 <div class="row">
@@ -44,6 +45,7 @@
                     </div>
                     <span asp-validation-for="Input.PhoneNumber" class="text-danger"></span>
                 </div>
+
             </div>
             <div class="form-group">
                 <div class="row">
@@ -55,6 +57,7 @@
                     </div>
                     <span asp-validation-for="Input.Address" class="text-danger"></span>
                 </div>
+
             </div>
             <div class="form-group">
                 <div class="row">
@@ -66,6 +69,7 @@
                     </div>
                     <span asp-validation-for="Input.City" class="text-danger"></span>
                 </div>
+
             </div>
             <div class="form-group">
                 <div class="row">
@@ -77,6 +81,7 @@
                     </div>
                     <span asp-validation-for="Input.PostalCode" class="text-danger"></span>
                 </div>
+
             </div>
             <div class="form-group">
                 <div class="row">
@@ -88,6 +93,7 @@
                     </div>
                     <span asp-validation-for="Input.Password" class="text-danger"></span>
                 </div>
+
             </div>
             <div class="form-group">
                 <div class="row">
@@ -99,68 +105,35 @@
                     </div>
                     <span asp-validation-for="Input.ConfirmPassword" class="text-danger"></span>
                 </div>
+
             </div>
+
 
             @if (User.IsInRole(SD.AdminEndUser))
             {
-                <div class="form-group">
-                    <div class="row">
-                        <div class="col-4">
-                            <label asp-for="Input.IsAdmin"></label>
-                        </div>
-                        <div class="col-8">
-                            <input asp-for="Input.IsAdmin" class="form-control" />
-                        </div>
-                        <span asp-validation-for="Input.IsAdmin" class="text-danger"></span>
-                    </div>
-                </div>
-            }
-
             <div class="form-group">
                 <div class="row">
                     <div class="col-4">
-
+                        <label asp-for="Input.IsAdmin"></label>
                     </div>
                     <div class="col-8">
-                        <button type="submit" class="btn btn-success">Registrar</button>
+                        <input asp-for="Input.IsAdmin" class="form-control" />
                     </div>
                 </div>
             </div>
-
+            }
+            <div class="form-group">
+                <div class="row">
+                    <div class="col-4">
+                    </div>
+                    <div class="col-8">
+                        <button type="submit" class="btn btn-success form-control">Register</button>
+                    </div>
+                </div>
+            </div>
         </form>
     </div>
 </div>
-
-@*<div class="col-md-6 col-md-offset-2">
-    <section>
-        <h4>Use outro serviço para se registrar.</h4>
-        <hr />
-        @{
-            if ((Model.ExternalLogins?.Count ?? 0) == 0)
-            {
-                <div>
-                    <p>
-                        Não há serviços de autenticação externos configurados. Consulte <a href="https://go.microsoft.com/fwlink/?LinkID=532715"> este artigo </a>
-                        para obter detalhes sobre como configurar esse aplicativo ASP.NET para dar suporte ao logon através de serviços externos.
-                    </p>
-                </div>
-            }
-            else
-            {
-                <form id="external-account" asp-page="./ExternalLogin" asp-route-returnUrl="@Model.ReturnUrl" method="post" class="form-horizontal">
-                    <div>
-                        <p>
-                            @foreach (var provider in Model.ExternalLogins)
-                            {
-                                <button type="submit" class="btn btn-primary" name="provider" value="@provider.Name" title="Log in using your @provider.DisplayName account">@provider.DisplayName</button>
-                            }
-                        </p>
-                    </div>
-                </form>
-            }
-        }
-    </section>
-</div>*@
 
 
 

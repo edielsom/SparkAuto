@@ -1,11 +1,14 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
-using SparkAuto.Areas.Utily;
 using SparkAuto.Data;
 using SparkAuto.Models;
-using System.Threading.Tasks;
+using SparkAuto.Utility;
 
 namespace SparkAuto.Pages.ServiceTypes
 {
@@ -14,7 +17,7 @@ namespace SparkAuto.Pages.ServiceTypes
     {
         private readonly ApplicationDbContext _db;
 
-        public DeleteModel(SparkAuto.Data.ApplicationDbContext db)
+        public DeleteModel(ApplicationDbContext db)
         {
             _db = db;
         }
@@ -29,7 +32,7 @@ namespace SparkAuto.Pages.ServiceTypes
                 return NotFound();
             }
 
-            ServiceType = await _db.ServiceTypes.FirstOrDefaultAsync(m => m.Id == id);
+            ServiceType = await _db.ServiceType.FirstOrDefaultAsync(m => m.Id == id);
 
             if (ServiceType == null)
             {
@@ -38,20 +41,15 @@ namespace SparkAuto.Pages.ServiceTypes
             return Page();
         }
 
-        public async Task<IActionResult> OnPostAsync(int? id)
+        public async Task<IActionResult> OnPostAsync()
         {
-            if (id == null)
+            if (ServiceType == null)
             {
                 return NotFound();
             }
 
-            ServiceType = await _db.ServiceTypes.FindAsync(id);
-
-            if (ServiceType != null)
-            {
-                _db.ServiceTypes.Remove(ServiceType);
-                await _db.SaveChangesAsync();
-            }
+            _db.ServiceType.Remove(ServiceType);
+            await _db.SaveChangesAsync();
 
             return RedirectToPage("./Index");
         }

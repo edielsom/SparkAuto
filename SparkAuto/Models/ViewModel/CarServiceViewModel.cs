@@ -1,4 +1,7 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace SparkAuto.Models.ViewModel
 {
@@ -8,7 +11,7 @@ namespace SparkAuto.Models.ViewModel
         public ServiceHeader ServiceHeader { get; set; }
         public ServiceDetails ServiceDetails { get; set; }
 
-        public List<ServiceType> ServiceTypesList { get; set; }
-        public List<ServiceShoppingCar> ServiceShoppingCarsList { get; set; }
+        public List<ServiceType> ServiceTypesList{ get; set; }
+        public List<ServiceShoppingCart> ServiceShoppingCart { get; set; }
     }
 }
